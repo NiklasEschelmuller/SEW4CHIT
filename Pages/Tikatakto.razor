@@ -1,0 +1,33 @@
+﻿@page "/tiktakto"
+
+<PageTitle>Tiktakto</PageTitle>
+
+<h1>Tiktakto</h1>
+
+<div>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(0,0)">@_ttt[0,0]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(0,1)">@_ttt[0,1]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(0,2)">@_ttt[0,2]</button>
+</div>
+<div>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(1,0)">@_ttt[1,0]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(1,1)">@_ttt[1,1]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(1,2)">@_ttt[1,2]</button>
+</div>
+<div>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(2,0)">@_ttt[2,0]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(2,1)">@_ttt[2,1]</button>
+    <button class="btn btn-primary btn-size" @onclick="()=>Set(2,2)">@_ttt[2,2]</button>
+</div>
+<p></p>
+<button class="btn btn-primary " @onclick="()=>_ttt = new TttGame()">Reset</button>
+<h1>@_ttt.Winner</h1>
+
+@code {
+    private TttGame _ttt = new();
+
+    private void Set(int x, int y)
+    {
+        _ttt.Set(x, y); 
+    }
+}
