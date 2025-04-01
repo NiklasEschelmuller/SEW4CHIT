@@ -1,2 +1,2 @@
 # Projects
-Richtiges Repotertory
+Richtiges Reposetroy
