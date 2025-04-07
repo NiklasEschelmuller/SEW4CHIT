@@ -1,4 +1,4 @@
-﻿@page "/Minesweeper"
+﻿@page "/Minesweppa"
 <h3>Minesweeper</h3>
 
 @for (int r = 0; r < 15; r++)
@@ -7,14 +7,18 @@
         @for (int c = 0; c < 15; c++)
         {
             int x = c, y = r;
-            <button class="btn btn-primary btn-size" onclick="(Set(x,y)">@_game[c,r]</button>
+            <button class="btn btn-primary btn-size" onclick="(Set(x,y)"></button>
         }
     </div>
 }
 
-<button class="btn btn-primary " @onclick="()=>_game = new FünfGeGame()">Reset</button>
+<button class="btn btn-primary " @onclick="()=>_game = new Mineswepper()">Reset</button>
+
+
 @code {
-    private FünfGeGame _game = new();
+    
+
+    private Mineswepper _game = new();
 
     private void Set(int x, int y)
     {
