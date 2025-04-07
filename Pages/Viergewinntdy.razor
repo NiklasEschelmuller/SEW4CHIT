@@ -1,0 +1,38 @@
+﻿@page "/Viergewinndy"
+<h1>Dynamisches Vier Gewinnt</h1>
+
+
+<div>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(0)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(1)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(2)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(3)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(4)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(5)"></button>
+    <button class="btn btn-primary btn-size bcol" @onclick="() => Set(6)"></button>
+</div>
+
+
+@for (int row = 0; row < 7; row++)
+{
+    <div>
+        @for (int col = 0; col < 7; col++)
+        {
+            <button class="btn btn-primary btn-size">@_game.Field[row, col]</button>
+            string s = @" ";
+            @s
+        }
+    </div>
+}
+<button class="btn btn-primary " @onclick="()=>_game = new VierGeGame()">Reset</button>
+
+<h2>@_game.Winner</h2>
+
+@code {
+    private VierGeGame _game = new();
+
+    private void Set(int column)
+    {
+        _game.PlacePiece(column);
+    }
+}
