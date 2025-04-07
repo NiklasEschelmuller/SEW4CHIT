@@ -1,0 +1,2 @@
+namespace BlazorApp1;
+
