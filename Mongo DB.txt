@@ -1,3 +1,4 @@
+
 Mongo DB
 
 use scott;
@@ -21,3 +22,5 @@ db.emps.find({ JOB: { $nin: ["MANAGER", "PRESIDENT"] }},{_id:0});
 db.emps.find({ ENAME: { $regex: /^.{2}A/ }},{_id: 0 , ENAME: 1})
 //10
 db.emps.find({ COMM: { $gt: 0 }},{_id:1, ENAME:1,JOB:1,COMM:1});
+//11
+db.emps.find({},{_id:0}).sort({COMM:1});
