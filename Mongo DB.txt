@@ -11,3 +11,5 @@ db.emps.find({JOB: "CLERK"},{_id:0,ENAME:1,JOB:1,SAL:1});
 db.emps.find({dept_id:{$ne:10}},{_id:0})
 //5
 db.emps.find({$expr: {$gt: ["$COMM", "$SAL"]}},{_id:0});
+//6 (funktioniert theoretisch aber Datum komisch )
+db.emps.find({HIREDATE: "1981-12-03"},{_id:0});
