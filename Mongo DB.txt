@@ -13,3 +13,7 @@ db.emps.find({dept_id:{$ne:10}},{_id:0})
 db.emps.find({$expr: {$gt: ["$COMM", "$SAL"]}},{_id:0});
 //6 (funktioniert theoretisch aber Datum komisch )
 db.emps.find({HIREDATE: "1981-12-03"},{_id:0});
+//7
+db.emps.find({$or:[{SAL:{$lte: 1250}},{SAL:{gte: 1600}}]};
+//8
+db.emps.find({ JOB: { $nin: ["MANAGER", "PRESIDENT"] }},{_id:0});
