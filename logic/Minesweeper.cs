@@ -10,24 +10,13 @@ public class Minesweeper
     {
         _field_ = new int[columns, rows];
         opened = new bool[columns, rows];
+        SetMine();
     }
 
-    /*private void MineSet()
+    private void SetMine()
     {
-        int amountm = _rand.Next(5, 20);
-        while (amountm > 0)
-        {
-            int x = _rand.Next(0, 16);
-            int y = _rand.Next(0, 16);
-            if (_field[x, y] == null)
-            {
-                _field[x, y] = "!!";
-                amountm--;
-            }
-            
-
-        }
-    }*/
+        _field_[1, 1] = -1;
+    }
 
 
 
@@ -35,6 +24,7 @@ public class Minesweeper
    {
        get
        {
+           if (_field_[col, row] == -1) return "!!";
            return _field_[col, row].ToString();
        }
    }
