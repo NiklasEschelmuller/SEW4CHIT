@@ -4,8 +4,10 @@ namespace BlazorApp1
     {
         private int[,] _field_;
         private bool[,] opened;
-        private int columns, rows;
-
+        private int columns;
+        private int rows;
+        private readonly Random _rand = new();
+        
         public Minesweeper(int columns, int rows)
         {
             this.columns = columns;
@@ -18,8 +20,19 @@ namespace BlazorApp1
 
         private void SetMine()
         {
-            _field_[0, 1] = -1;
-            _field_[2, 1] = -1;
+            int amountm = _rand.Next(5, 10);
+            while (amountm > 0)
+            {
+                int x = _rand.Next(0, columns); 
+                int y = _rand.Next(0, rows); 
+
+                if (_field_[x, y] == 0)
+                {
+                    _field_[x, y] = -1; 
+                    amountm--;
+                }
+
+            }
         }
 
         private void CalculateMineCounts() {
