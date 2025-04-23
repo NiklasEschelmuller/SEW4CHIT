@@ -24,3 +24,7 @@ db.emps.find({ ENAME: { $regex: /^.{2}A/ }},{_id: 0 , ENAME: 1})
 db.emps.find({ COMM: { $gt: 0 }},{_id:1, ENAME:1,JOB:1,COMM:1});
 //11
 db.emps.find({},{_id:0}).sort({COMM:1});
+//12
+db.emps.find({JOB:{$nin:[["MANAGER", "PRESIDENT"]]}},{_id:0}).sort({dept_id:1, HIREDATE: -1});
+//13
+db.emps.find({$expr: { $eq: [ { $strLenCP: "$ENAME" }, 6 ] }},{_id: 0,ENAME: 1});
