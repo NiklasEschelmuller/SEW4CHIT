@@ -28,3 +28,5 @@ db.emps.find({},{_id:0}).sort({COMM:1});
 db.emps.find({JOB:{$nin:[["MANAGER", "PRESIDENT"]]}},{_id:0}).sort({dept_id:1, HIREDATE: -1});
 //13
 db.emps.find({$expr: { $eq: [ { $strLenCP: "$ENAME" }, 6 ] }},{_id: 0,ENAME: 1});
+//14
+db.emps.find({dept_id:30},{_id: 0, Mitarbeiter: {$concat: ["$ENAME", "-", "$JOB"]}, dept_id:1});
