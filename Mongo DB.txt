@@ -30,3 +30,7 @@ db.emps.find({JOB:{$nin:[["MANAGER", "PRESIDENT"]]}},{_id:0}).sort({dept_id:1, H
 db.emps.find({$expr: { $eq: [ { $strLenCP: "$ENAME" }, 6 ] }},{_id: 0,ENAME: 1});
 //14
 db.emps.find({dept_id:30},{_id: 0, Mitarbeiter: {$concat: ["$ENAME", "-", "$JOB"]}, dept_id:1});
+//16
+db.emps.aggregate([{$project: {_id: 0, ENAME: 1, MONTHLY: "$SAL", DAILY: { $divide: ["$SAL", 22] }, HOURLY: { $divide: ["$SAL", 22 * 8] }}}])
+//17
+db.emps.aggregate([{$group: {_id: null,TOTAL: { $sum: "$SAL" } }},{$project: {_id: 0, TOTAL: 1}}]);
