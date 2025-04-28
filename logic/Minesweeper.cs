@@ -4,72 +4,55 @@ namespace BlazorApp1
     {
         private int[,] _field_;
         private bool[,] opened;
-        private int columns;
-        private int rows;
-        private readonly Random _rand = new();
+        private const int amountmines = 10;
+         Random rand = new Random();
+         public int Columns => _field_.GetLength(0);
+         public int Rows => _field_.GetLength(1);
         
         public Minesweeper(int columns, int rows)
         {
-            this.columns = columns;
-            this.rows = rows;
             _field_ = new int[columns, rows];
             opened = new bool[columns, rows];
-            SetMine();
-            CalculateMineCounts();
-        }
-
-        private void SetMine()
-        {
-            int amountm = _rand.Next(5, 10);
-            while (amountm > 0)
+            for (int i = 0; i < amountmines; i++)
             {
-                int x = _rand.Next(0, columns); 
-                int y = _rand.Next(0, rows); 
-
-                if (_field_[x, y] == 0)
+                int r = rand.Next(0, rows);
+                int c = rand.Next(0, columns);
+                if (_field_[c, r] != -1) // nicht zwei Minen an derselben Stelle
                 {
-                    _field_[x, y] = -1; 
-                    amountm--;
-                }
-
-            }
-        }
-
-        private void CalculateMineCounts() {
-            for (int x = 0; x < columns; x++)
-            {
-                for (int y = 0; y < rows; y++)
+                    _field_[c, r] = -1; // Mine
+                    incrementBombCountsNearby(c, r);
+                } else
                 {
-                    if (_field_[x, y] != -1)
-                    {
-                        int mineCount = 0;
-
-                        for (int dx = -1; dx <= 1; dx++)
-                        {
-                            for (int dy = -1; dy <= 1; dy++)
-                            {
-                                if (dx == 0 && dy == 0)
-                                    continue;
-
-                                int nx = x + dx;
-                                int ny = y + dy;
-
-                                if (IsInBounds(nx, ny) && _field_[nx, ny] == -1)
-                                {
-                                    mineCount++;
-                                }
-                            }
-                        }
-
-                        _field_[x, y] = mineCount;
-                    }
+                    i--; 
                 }
             }
         }
 
-        private bool IsInBounds(int x, int y)
+
+
+        private void incrementBombCountsNearby(int c, int r)
         {
-            return x >= 0 && x < columns && y >= 0 && y < rows;
+            int[][] directions =
+            [
+                [-1, -1], [0, -1], [1, -1],
+                [-1, 0], [1, 0],
+                [-1, 1], [0, 1], [1, 1]
+            ];
+            for (int i = 0; i < directions.Length; i++)
+            {
+                int col = c + directions[i][0];
+                int row = r + directions[i][1];
+                if (col >= 0 && col < Columns && row >= 0 && row < Rows)
+                {
+                    incrementBombCount(col,row);
+                }
+            }
+        }
+
+        void incrementBombCount(int c, int r)
+        {
+            if(_field_[c, r] != -1)
+                _field_[c, r]++;
         }
 
         public string this[int col, int row]
