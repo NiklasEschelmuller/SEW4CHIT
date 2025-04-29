@@ -4,15 +4,19 @@ namespace BlazorApp1
     {
         private int[,] _field_;
         private bool[,] opened;
+        private bool[,] _suspected_mine;
         private const int amountmines = 10;
         Random rand = new Random();
         public int Columns => _field_.GetLength(0);
         public int Rows => _field_.GetLength(1);
+        
+        public int  SuspectCount { get; private set; }
 
         public Minesweeper(int columns, int rows)
         {
             _field_ = new int[columns, rows];
             opened = new bool[columns, rows];
+            _suspected_mine = new bool[columns, rows];
             for (int i = 0; i < amountmines; i++)
             {
                 int r = rand.Next(0, rows);
@@ -29,6 +33,18 @@ namespace BlazorApp1
             }
         }
 
+        public void Toggle(int c, int r)
+        {
+            _suspected_mine[c, r] = !_suspected_mine[c, r];
+            if (_suspected_mine[c, r])
+            {
+                SuspectCount++;
+            }
+            else
+            {
+                SuspectCount--;
+            }
+        }
 
        void incrementBombCountsNearby(int c, int r)
         {
@@ -61,16 +77,23 @@ namespace BlazorApp1
         {
             get
             {
-                if (!opened[col, row])
+                
+
+                if (!opened[col, row] && !_suspected_mine[col, row])
                 {
                     return String.Empty;
-                }else
+                }
+
+                if (_suspected_mine[col, row])
+                {
+                    return "%";
+                }
 
                 if (_field_[col, row] == -1) return "!!";
-                    {
-                        return _field_[col, row].ToString();
-                    }
+                {
+                    return _field_[col, row].ToString();
                 }
+            }
             set
             {
                 if (!opened[col, row])
