@@ -5,10 +5,10 @@ namespace BlazorApp1
         private int[,] _field_;
         private bool[,] opened;
         private const int amountmines = 10;
-         Random rand = new Random();
-         public int Columns => _field_.GetLength(0);
-         public int Rows => _field_.GetLength(1);
-        
+        Random rand = new Random();
+        public int Columns => _field_.GetLength(0);
+        public int Rows => _field_.GetLength(1);
+
         public Minesweeper(int columns, int rows)
         {
             _field_ = new int[columns, rows];
@@ -21,9 +21,10 @@ namespace BlazorApp1
                 {
                     _field_[c, r] = -1; // Mine
                     incrementBombCountsNearby(c, r);
-                } else
+                }
+                else
                 {
-                    i--; 
+                    i--;
                 }
             }
         }
@@ -44,24 +45,47 @@ namespace BlazorApp1
                 int row = r + directions[i][1];
                 if (col >= 0 && col < Columns && row >= 0 && row < Rows)
                 {
-                    incrementBombCount(col,row);
+                    incrementBombCount(col, row);
                 }
             }
         }
 
         void incrementBombCount(int c, int r)
         {
-            if(_field_[c, r] != -1)
+            if (_field_[c, r] != -1)
                 _field_[c, r]++;
         }
+
+       /* public void Reveal(int col, int row)
+        {
+            if (col >= 0 && col < Columns && row >= 0 && row < Rows)
+            {
+                opened[col, row] = true; 
+            }
+        }*/
 
         public string this[int col, int row]
         {
             get
             {
+                if (!opened[col, row])
+                {
+                    return String.Empty;
+                }else
+
                 if (_field_[col, row] == -1) return "!!";
-                return _field_[col, row].ToString();      
+                    {
+                        return _field_[col, row].ToString();
+                    }
+                }
+            set
+            {
+                if (!opened[col, row])
+                {
+                    opened[col, row] = true;
+                }
             }
         }
+        
     }
 }
