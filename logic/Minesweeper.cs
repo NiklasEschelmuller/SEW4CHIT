@@ -30,11 +30,10 @@ namespace BlazorApp1
         }
 
 
-
-        private void incrementBombCountsNearby(int c, int r)
+       void incrementBombCountsNearby(int c, int r)
         {
-            int[][] directions =
-            [
+            
+            int[][] directions = [
                 [-1, -1], [0, -1], [1, -1],
                 [-1, 0], [1, 0],
                 [-1, 1], [0, 1], [1, 1]
@@ -56,13 +55,7 @@ namespace BlazorApp1
                 _field_[c, r]++;
         }
 
-       /* public void Reveal(int col, int row)
-        {
-            if (col >= 0 && col < Columns && row >= 0 && row < Rows)
-            {
-                opened[col, row] = true; 
-            }
-        }*/
+
 
         public string this[int col, int row]
         {
@@ -82,7 +75,34 @@ namespace BlazorApp1
             {
                 if (!opened[col, row])
                 {
-                    opened[col, row] = true;
+                    Uncover(col, row);
+                }
+            }
+        }
+
+        private void Uncover(int c, int r)
+        {
+            if (opened[c, r])
+            {
+                return;
+            }
+            opened[c, r] = true;
+
+            if (_field_[c, r] == 0)
+            {
+                int[][] directions = [
+                    [-1, -1], [0, -1], [1, -1],
+                    [-1, 0], [1, 0],
+                    [-1, 1], [0, 1], [1, 1]
+                ];
+                for (int i = 0; i < directions.Length; i++)
+                {
+                    int col = c + directions[i][0];
+                    int row = r + directions[i][1];
+                    if (col >= 0 && col < Columns && row >= 0 && row < Rows)
+                    {
+                        Uncover(col, row);
+                    }
                 }
             }
         }
