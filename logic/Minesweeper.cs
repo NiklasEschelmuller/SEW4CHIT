@@ -1,5 +1,6 @@
 namespace BlazorApp1
 {
+    //test
     public class Minesweeper
     {
         private int[,] _field_;
