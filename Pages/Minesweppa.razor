@@ -1,28 +1,48 @@
 ﻿@page "/Fünfgewinnt"
 <h3>Minesweeper</h3>
 
-@for (int r = 0; r < ROWS; r++)
-{
-    <div>
-        @for (int c = 0; c < COLS; c++)
-        {
-            int x = c, y = r;
-            <button class="btn btn-primary btn-size" @onclick="() => Click(x, y)">@_game[x, y]</button>
-        }
-    </div>
-}
 
+<div tabindex="0" @onkeydown="Down" @onkeyup="Up">
+    @for (int r = 0; r < ROWS; r++)
+    {
+        <div>
+            @for (int c = 0; c < COLS; c++)
+            {
+                int x = c, y = r;
+                <button class="btn btn-primary btn-size" @onclick="() => Click(x, y)">@_game[x, y]</button>
+            }
+        </div>
+    }
+</div>
+<h5>Suspected Mines: @_game.SuspectCount / 10</h5>
 <button class="btn btn-primary" @onclick="Reset">Reset</button>
 
 @code {
     static int COLS = 10;
     static int ROWS = 10;
     private Minesweeper _game = new(COLS, ROWS);
-
+    string k = "";
     private void Click(int c, int r)
     {
-        _game[c, r] = " ";  
-        StateHasChanged(); 
+        if (k == "")
+        {
+            _game[c, r] = " ";
+            StateHasChanged();
+        }
+        else
+        {
+            _game.Toggle(c,r);
+        }
+    }
+
+    private void Down(KeyboardEventArgs ke)
+    {
+        k = ke.Key;
+    }
+
+    private void Up(KeyboardEventArgs ke)
+    {
+        k = "";
     }
 
     private void Reset()

@@ -17,6 +17,28 @@
       <Content Include="logic\IGame.cs" />
       <Content Include="logic\TTTGame.cs" />
       <Content Include="logic\VierGeGame.cs" />
+      <Content Include="obj\BlazorApp1.csproj.nuget.dgspec.json" />
+      <Content Include="obj\Debug\net8.0\blazor.boot.json" />
+      <Content Include="obj\Debug\net8.0\blazor.build.boot-extension.json" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.AssemblyInfoInputs.cache" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.assets.cache" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.csproj.CoreCompileInputs.cache" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.csproj.FileListAbsolute.txt" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.csproj.Up2Date" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.dll" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.MvcApplicationPartsAssemblyInfo.cache" />
+      <Content Include="obj\Debug\net8.0\BlazorApp1.pdb" />
+      <Content Include="obj\Debug\net8.0\staticwebassets.build.json" />
+      <Content Include="obj\Debug\net8.0\staticwebassets.development.json" />
+      <Content Include="obj\Debug\net8.0\staticwebassets.pack.json" />
+      <Content Include="obj\project.assets.json" />
+      <Content Include="obj\project.nuget.cache" />
+      <Content Include="obj\project.packagespec.json" />
+      <Content Include="obj\rider.project.restore.info" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs" />
     </ItemGroup>
 
 </Project>

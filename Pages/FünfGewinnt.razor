@@ -1,10 +1,10 @@
-﻿@page "/Fünfgewinnt"
+﻿@page "/Home"
 <h3>Fünfgewinnt</h3>
 
-@for (int r = 0; r < 15; r++)
+@for (int r = 0; r < 18; r++)
 {
     <div>
-        @for (int c = 0; c < 15; c++)
+        @for (int c = 0; c < 18; c++)
         {
             int x = c, y = r;
             <button class="btn btn-primary btn-size" onclick="(Set(x,y)">@_game[c,r]</button>
