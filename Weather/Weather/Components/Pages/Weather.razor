@@ -2,7 +2,6 @@
 @page "/weather"
 @attribute [StreamRendering]
 
-
 <PageTitle>Weather</PageTitle>
 
 <h1>Weather</h1>
@@ -14,6 +13,7 @@
     <tr>
         <th>Id</th>
         <th>Value</th>
+        <th>Aktion</th>
     </tr>
     </thead>
     <tbody>
@@ -22,6 +22,9 @@
         <tr>
             <td>@entry.Id</td>
             <td>@entry.Value</td>
+            <td>
+                <button @onclick="() => DeleteEntry(entry.Id)">Löschen</button>
+            </td>
         </tr>
     }
     </tbody>
@@ -30,13 +33,19 @@
 @code {
 
     private List<Test> entries = new();
+    private MySqlConnection _connection = new ("server=localhost;user=root;password=insy;database=demo");
 
     protected override void OnInitialized()
     {
-        using var connection = new MySqlConnection("server=localhost;user=root;password=insy;database=demo");
-        connection.Open();
+        LoadEntries();
+    }
 
-        using var command = new MySqlCommand("SELECT * FROM test;", connection);
+    private void LoadEntries()
+    {
+        entries.Clear();
+        _connection.Open();
+
+        using var command = new MySqlCommand("SELECT * FROM test;", _connection);
         using var reader = command.ExecuteReader();
 
         while (reader.Read())
@@ -45,6 +54,20 @@
             string value = reader.GetString(1);
             entries.Add(new Test { Id = id, Value = value });
         }
+
+        _connection.Close();
+    }
+
+    private void DeleteEntry(int id)
+    {
+        _connection.Open();
+        using var command = new MySqlCommand("DELETE FROM test WHERE id = @id;", _connection);
+        command.Parameters.AddWithValue("@id", id);
+        command.ExecuteNonQuery();
+        _connection.Close();
+
+        entries.RemoveAll(e => e.Id == id);
+        StateHasChanged();
     }
 
     private class Test
