@@ -21,9 +21,26 @@
     {
         <tr>
             <td>@entry.Id</td>
-            <td>@entry.Value</td>
             <td>
-                <button @onclick="() => DeleteEntry(entry.Id)">Löschen</button>
+                @if (editingId == entry.Id)
+                {
+                    <input @bind="editingValue" />
+                }
+                else
+                {
+                    @entry.Value
+                }
+            </td>
+            <td>
+                @if (editingId == entry.Id)
+                {
+                    <button @onclick="() => SaveEdit(entry.Id)">Speichern</button>
+                    <button @onclick="CancelEdit">Abbrechen</button>
+                }
+                else
+                {
+                    <button @onclick="() => StartEdit(entry)">Bearbeiten</button>
+                }
             </td>
         </tr>
     }
@@ -34,6 +51,9 @@
 
     private List<Test> entries = new();
     private MySqlConnection _connection = new ("server=localhost;user=root;password=insy;database=demo");
+
+    private int? editingId = null;
+    private string editingValue;
 
     protected override void OnInitialized()
     {
@@ -58,16 +78,28 @@
         _connection.Close();
     }
 
-    private void DeleteEntry(int id)
+    private void StartEdit(Test entry)
+    {
+        editingId = entry.Id;
+        editingValue = entry.Value;
+    }
+
+    private void SaveEdit(int id)
     {
         _connection.Open();
-        using var command = new MySqlCommand("DELETE FROM test WHERE id = @id;", _connection);
+        using var command = new MySqlCommand("UPDATE test SET value = @value WHERE id = @id;", _connection);
+        command.Parameters.AddWithValue("@value", editingValue);
         command.Parameters.AddWithValue("@id", id);
         command.ExecuteNonQuery();
         _connection.Close();
 
-        entries.RemoveAll(e => e.Id == id);
-        StateHasChanged();
+        editingId = null;
+        LoadEntries();
+    }
+
+    private void CancelEdit()
+    {
+        editingId = null;
     }
 
     private class Test
