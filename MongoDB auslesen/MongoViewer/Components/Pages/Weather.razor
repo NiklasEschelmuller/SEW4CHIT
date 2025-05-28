@@ -1,0 +1,67 @@
+﻿@page "/weather"
+@attribute [StreamRendering]
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using Newtonsoft.Json;
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (list == null)
+{
+    <!-- Leerer Bereich oder Ladeanzeige -->
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            @foreach (var head in columns)
+            {
+                <th>@head</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var doc in list)
+        {
+            <tr>
+                @foreach (var col in columns)
+                {
+                    <td>@(doc.Contains(col) ? doc[col].ToString() : "")</td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    MongoClient client = new MongoClient("mongodb://localhost:27017");
+
+    List<BsonDocument> list = new List<BsonDocument>();
+    HashSet<string> columns = new HashSet<string>();
+
+    protected override void OnInitialized()
+    {
+        var database = client.GetDatabase("TestDB");
+        var collection = database.GetCollection<BsonDocument>("TestCollection");
+
+        var list = collection.AsQueryable().ToList();
+
+        foreach (var document in list)
+        {
+            foreach (var kvp in document)
+            {
+                columns.Add(kvp.Name);
+            }
+        }
+
+    }
+    
+
+}

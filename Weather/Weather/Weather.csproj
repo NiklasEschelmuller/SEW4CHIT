@@ -6,4 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MySql.Data" Version="9.3.0" />
+      <PackageReference Include="MySqlConnector.DependencyInjection" Version="2.4.0" />
+    </ItemGroup>
+
 </Project>

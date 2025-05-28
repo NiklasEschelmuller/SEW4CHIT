@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB auslesen", "MongoDB auslesen\MongoDB auslesen.csproj", "{37869499-04CB-46F3-8B02-B0D8A9C30C56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reflexion", "Reflexion\Reflexion.csproj", "{BC4E7437-25A4-49AA-87E4-14313CE67067}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoViewer", "MongoViewer\MongoViewer.csproj", "{CD62CBCC-C9AD-4038-B329-0FC9EF9CFA8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37869499-04CB-46F3-8B02-B0D8A9C30C56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37869499-04CB-46F3-8B02-B0D8A9C30C56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37869499-04CB-46F3-8B02-B0D8A9C30C56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37869499-04CB-46F3-8B02-B0D8A9C30C56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4E7437-25A4-49AA-87E4-14313CE67067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4E7437-25A4-49AA-87E4-14313CE67067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4E7437-25A4-49AA-87E4-14313CE67067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4E7437-25A4-49AA-87E4-14313CE67067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD62CBCC-C9AD-4038-B329-0FC9EF9CFA8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD62CBCC-C9AD-4038-B329-0FC9EF9CFA8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD62CBCC-C9AD-4038-B329-0FC9EF9CFA8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD62CBCC-C9AD-4038-B329-0FC9EF9CFA8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
