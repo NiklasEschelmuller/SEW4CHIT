@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("Personen auslesen")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("PersonReader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fc8f65a6683966c23eea444e213ea8e4b6d75249")]
-[assembly: System.Reflection.AssemblyProductAttribute("Personen auslesen")]
-[assembly: System.Reflection.AssemblyTitleAttribute("Personen auslesen")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccccea565cb15b160b8070d2993b5b2ff1bdf592")]
+[assembly: System.Reflection.AssemblyProductAttribute("PersonReader")]
+[assembly: System.Reflection.AssemblyTitleAttribute("PersonReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Von der MSBuild WriteCodeFragment-Klasse generiert.

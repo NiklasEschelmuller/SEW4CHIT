@@ -1,0 +1,61 @@
+﻿@page "/weather"
+@@page "/personen"
+@attribute [StreamRendering]
+
+<PageTitle>Personen</PageTitle>
+
+<h1>Personenliste</h1>
+
+<p>Diese Komponente zeigt eine Liste von Personen aus einer Datenbank.</p>
+
+@if (personen == null)
+{
+    <p>Lade Daten...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            @foreach (var head in column)
+            {
+                <th>@head</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var person in personen)
+        {
+            <tr>
+                <td>@person.ID</td>
+                <td>@person.Vorname</td>
+                <td>@person.Nachname</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    public class Person
+    {
+        public int ID { get; set; }
+        public string Vorname { get; set; }
+        public string Nachname { get; set; }
+    }
+
+
+    List<Person> personen;
+    List<string> column = new() { "ID", "Vorname", "Nachname" };
+
+    protected override void OnInitialized()
+    {
+
+        personen = new List<Person>
+        {
+            new Person { ID = 1, Vorname = "Max", Nachname = "Mustermann" },
+            new Person { ID = 2, Vorname = "Erika", Nachname = "Musterfrau" }
+        };
+    }
+}
