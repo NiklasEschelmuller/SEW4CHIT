@@ -2,7 +2,7 @@
 
 @attribute [StreamRendering]
 @using Microsoft.EntityFrameworkCore;
-@using Microsoft.EntityFrameworkCore.SqlServer;
+@using  Pomelo.EntityFrameworkCore.MySql;
 
 <PageTitle>Personen</PageTitle>
 
@@ -10,28 +10,31 @@
 
 <p>Diese Komponente zeigt eine Liste von Personen aus einer Datenbank.</p>
 
-@if (personen == null)
+@if (person == null)
 {
     <p>Lade Daten...</p>
+}
+else if (!person.Any())
+{
+    <p>Keine Daten gefunden.</p>
 }
 else
 {
     <table class="table">
         <thead>
         <tr>
-            @foreach (var head in column)
-            {
-                <th>@head</th>
-            }
+            <th>ID</th>
+            <th>Vorname</th>
+            <th>Nachname</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var person in personen)
+        @foreach (var p in person)
         {
             <tr>
-                <td>@person.ID</td>
-                <td>@person.Vorname</td>
-                <td>@person.Nachname</td>
+                <td>@p.ID</td>
+                <td>@p.Vorname</td>
+                <td>@p.Nachname</td>
             </tr>
         }
         </tbody>
@@ -48,16 +51,30 @@ else
     }
 
 
-    List<Person> personen;
-    List<string> column = new() { "ID", "Vorname", "Nachname" };
+    public class PersonContext : DbContext
+    {
+        public DbSet<Person> Person { get; set; }
+
+        public PersonContext(DbContextOptions<PersonContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>().ToTable("Person");  
+        }
+    }
+
+
+    List<Person> person;
 
     protected override void OnInitialized()
     {
+            var optionsBuilder = new DbContextOptionsBuilder<PersonContext>();
+            var connectionString = "server=localhost;database=PersonDB;user=root;password=insy;";
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 36)); 
 
-        personen = new List<Person>
-        {
-            new Person { ID = 1, Vorname = "Max", Nachname = "Mustermann" },
-            new Person { ID = 2, Vorname = "Erika", Nachname = "Musterfrau" }
-        };
+            optionsBuilder.UseMySql(connectionString, serverVersion);
+
+            using var db = new PersonContext(optionsBuilder.Options);
+            person = db.Person.ToList();
     }
 }
