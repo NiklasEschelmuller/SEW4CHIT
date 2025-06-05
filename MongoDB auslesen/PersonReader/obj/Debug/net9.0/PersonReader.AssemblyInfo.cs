@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PersonReader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccccea565cb15b160b8070d2993b5b2ff1bdf592")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc00efb20f48ddd2bdb16f5504536b4ed1a470ae")]
 [assembly: System.Reflection.AssemblyProductAttribute("PersonReader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PersonReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
