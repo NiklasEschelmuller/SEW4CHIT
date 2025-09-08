@@ -72,7 +72,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-int amount = 1_000_000_000; 
+int amount = 1_000_000; 
 int count1 = 0, count2 = 0, count3= 0, count4 = 0;
 long time1 = 0, time2 = 0, time3 = 0, time4 = 0;
 
@@ -85,20 +85,19 @@ Thread t1 = new Thread(() =>
     Stopwatch sw = Stopwatch.StartNew();
     for (int i = 2; i * i <= amount; i++)
     {
-        if (sieve[i])
-        {
+        if (sieve[i]) {
             for (int j = i * i; j <= amount; j += i)
                 sieve[j] = false;
         }
     }
-
     sw.Stop();
 
-    for (int i = 3 * amount / 4 + 1; i <= amount /4; i++)
+    for (int i = 2; i<= amount /4;  i++)
         if (sieve[i]) count1++;
 
     time1 = sw.ElapsedMilliseconds;
 });
+
 
 //Thread 2
 Thread t2 = new Thread(() =>
@@ -115,7 +114,7 @@ Thread t2 = new Thread(() =>
     }
     sw.Stop();
 
-    for (int i = 3 * amount / 4 + 1; i <= amount/4; i++)
+    for (int i = 2; i <= amount/4; i++)
         if (sieve[i]) count2++;
 
     time2 = sw.ElapsedMilliseconds;
@@ -137,7 +136,7 @@ Thread t3 = new Thread(() =>
     }
     sw.Stop();
 
-    for (int i = 3 * amount / 4 + 1; i <= amount; i++)
+    for (int i = 2; i <= amount/4; i++)
         if (sieve[i]) count3++;
 
     time3 = sw.ElapsedMilliseconds;
@@ -160,13 +159,13 @@ Thread t4 = new Thread(() =>
     }
     sw.Stop();
 
-    for (int i = 3 * amount / 4 + 1; i <= amount; i++)
+    for (int i = 2; i <= amount/4; i++)
         if (sieve[i]) count4++;
 
     time4 = sw.ElapsedMilliseconds;
 });
 
-
+Stopwatch total = Stopwatch.StartNew();
 t1.Start();
 t2.Start();
 t3.Start();
@@ -176,14 +175,17 @@ t1.Join();
 t2.Join();
 t3.Join();
 t4.Join();
-
+total.Stop();
 
 //Ergebnis
-int total = count1 + count2;
+int totalCount = count1 + count2 + count3 + count4;
 Console.WriteLine($"Thread1: {count1} Primzahlen, Zeit: {time1} ms");
 Console.WriteLine($"Thread2: {count2} Primzahlen, Zeit: {time2} ms");
 Console.WriteLine($"Thread2: {count3} Primzahlen, Zeit: {time3} ms");
 Console.WriteLine($"Thread2: {count4} Primzahlen, Zeit: {time4} ms");
 
-Console.WriteLine($"\nGesamt: {total} Primzahlen bis {amount}");
+Console.WriteLine($"\nGesamt: {totalCount} Primzahlen bis {amount}");
+Console.WriteLine($"Gesamtzeit (parallel): {total.ElapsedMilliseconds} ms");
 Console.WriteLine($"Gesamtzeit (addiert): {time1 + time2 + time3 + time4} ms");
+
+
