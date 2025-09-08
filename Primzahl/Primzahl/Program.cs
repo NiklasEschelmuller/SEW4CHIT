@@ -72,61 +72,118 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-int amount = 1000000000; 
-int count1 = 0, count2 = 0;
-long time1 = 0, time2 = 0;
+int amount = 1_000_000_000; 
+int count1 = 0, count2 = 0, count3= 0, count4 = 0;
+long time1 = 0, time2 = 0, time3 = 0, time4 = 0;
 
-// Sekundär-Thread starten
-Thread t = new Thread(() =>
+//Thread 1
+Thread t1 = new Thread(() =>
 {
-    bool[] sieve2 = new bool[amount + 1];
-    for (int i = 2; i <= amount; i++) sieve2[i] = true;
+    bool[] sieve = new bool[amount + 1];
+    for (int i = 2; i <= amount; i++) sieve[i] = true;
 
-    Stopwatch sw2 = Stopwatch.StartNew();
+    Stopwatch sw = Stopwatch.StartNew();
     for (int i = 2; i * i <= amount; i++)
     {
-        if (sieve2[i])
+        if (sieve[i])
         {
             for (int j = i * i; j <= amount; j += i)
-                sieve2[j] = false;
+                sieve[j] = false;
         }
     }
-    sw2.Stop();
 
-    for (int i = amount / 2 + 1; i <= amount; i++)
-        if (sieve2[i]) count2++;
+    sw.Stop();
 
-    time2 = sw2.ElapsedMilliseconds;
+    for (int i = 3 * amount / 4 + 1; i <= amount /4; i++)
+        if (sieve[i]) count1++;
+
+    time1 = sw.ElapsedMilliseconds;
 });
 
-t.Start();
-
-// Primär-Thread
-bool[] sieve1 = new bool[amount + 1];
-for (int i = 2; i <= amount; i++) sieve1[i] = true;
-
-Stopwatch sw1 = Stopwatch.StartNew();
-for (int i = 2; i * i <= amount; i++)
+//Thread 2
+Thread t2 = new Thread(() =>
 {
-    if (sieve1[i])
-    {
-        for (int j = i * i; j <= amount; j += i)
-            sieve1[j] = false;
+    bool[] sieve = new bool[amount + 1];
+    for (int i = 2; i <= amount; i++) sieve[i] = true;
+
+    Stopwatch sw = Stopwatch.StartNew();
+    for (int i = 2; i * i <= amount; i++) {
+        if (sieve[i]) {
+            for (int j = i * i; j <= amount; j += i)
+                sieve[j] = false;
+        }
     }
-}
-sw1.Stop();
+    sw.Stop();
 
-for (int i = 2; i <= amount / 2; i++)
-    if (sieve1[i]) count1++;
+    for (int i = 3 * amount / 4 + 1; i <= amount/4; i++)
+        if (sieve[i]) count2++;
 
-time1 = sw1.ElapsedMilliseconds;
+    time2 = sw.ElapsedMilliseconds;
+});
 
-// Warten bis Sekundär-Thread fertig
-t.Join();
 
-// Ergebnis
+//Thread 3
+Thread t3 = new Thread(() =>
+{
+    bool[] sieve = new bool[amount + 1];
+    for (int i = 2; i <= amount; i++) sieve[i] = true;
+
+    Stopwatch sw = Stopwatch.StartNew();
+    for (int i = 2; i * i <= amount; i++)
+    { if (sieve[i]) {
+            for (int j = i * i; j <= amount; j += i)
+                sieve[j] = false;
+        }
+    }
+    sw.Stop();
+
+    for (int i = 3 * amount / 4 + 1; i <= amount; i++)
+        if (sieve[i]) count3++;
+
+    time3 = sw.ElapsedMilliseconds;
+});
+
+//Thread4
+Thread t4 = new Thread(() =>
+{
+    bool[] sieve = new bool[amount + 1];
+    for (int i = 2; i <= amount; i++) sieve[i] = true;
+
+    Stopwatch sw = Stopwatch.StartNew();
+    for (int i = 2; i * i <= amount; i++)
+    {
+        if (sieve[i])
+        {
+            for (int j = i * i; j <= amount; j += i)
+                sieve[j] = false;
+        }
+    }
+    sw.Stop();
+
+    for (int i = 3 * amount / 4 + 1; i <= amount; i++)
+        if (sieve[i]) count4++;
+
+    time4 = sw.ElapsedMilliseconds;
+});
+
+
+t1.Start();
+t2.Start();
+t3.Start();
+t4.Start();
+
+t1.Join();
+t2.Join();
+t3.Join();
+t4.Join();
+
+
+//Ergebnis
 int total = count1 + count2;
-Console.WriteLine($"Primär-Thread: {count1} Primzahlen, Zeit: {time1} ms");
-Console.WriteLine($"Sekundär-Thread: {count2} Primzahlen, Zeit: {time2} ms");
+Console.WriteLine($"Thread1: {count1} Primzahlen, Zeit: {time1} ms");
+Console.WriteLine($"Thread2: {count2} Primzahlen, Zeit: {time2} ms");
+Console.WriteLine($"Thread2: {count3} Primzahlen, Zeit: {time3} ms");
+Console.WriteLine($"Thread2: {count4} Primzahlen, Zeit: {time4} ms");
+
 Console.WriteLine($"\nGesamt: {total} Primzahlen bis {amount}");
-Console.WriteLine($"Gesamtzeit (addiert): {time1 + time2} ms");
+Console.WriteLine($"Gesamtzeit (addiert): {time1 + time2 + time3 + time4} ms");
