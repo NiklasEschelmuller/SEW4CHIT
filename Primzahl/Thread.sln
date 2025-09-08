@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primzahl", "Primzahl\Primzahl.csproj", "{A084D1B2-DA7C-48A0-B414-36CBD6E08B06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadExample", "ThreadExample\ThreadExample.csproj", "{71FB464E-9133-49FC-9CEA-EC71B9195FD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A084D1B2-DA7C-48A0-B414-36CBD6E08B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A084D1B2-DA7C-48A0-B414-36CBD6E08B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A084D1B2-DA7C-48A0-B414-36CBD6E08B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A084D1B2-DA7C-48A0-B414-36CBD6E08B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71FB464E-9133-49FC-9CEA-EC71B9195FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71FB464E-9133-49FC-9CEA-EC71B9195FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71FB464E-9133-49FC-9CEA-EC71B9195FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71FB464E-9133-49FC-9CEA-EC71B9195FD1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
