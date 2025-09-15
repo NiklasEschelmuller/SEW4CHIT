@@ -2,6 +2,7 @@
 const int START = 3;
 SemaphoreSlim[] ringlern = new SemaphoreSlim[ANZ];
 
+
 for (int i = 0; i < ANZ; i++)
 {
     if (i == (START-1)) {
