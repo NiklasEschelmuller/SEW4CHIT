@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ringelern")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a33cef646d321b1702dd4602efedd790b6b3c64b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+309df0bb92806cd8c8aed0763aed19c759ed1fc0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ringelern")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ringelern")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,10 +1,10 @@
-﻿const int ANZ = 6;
-//const int START = 3;
+﻿const int ANZ = 8;
+const int START = 3;
 SemaphoreSlim[] ringlern = new SemaphoreSlim[ANZ];
 
 for (int i = 0; i < ANZ; i++)
 {
-    if (i == 0) {
+    if (i == (START-1)) {
         ringlern[i] = new SemaphoreSlim(1, 1);
     }else {
         ringlern[i] = new SemaphoreSlim(0, 1);
