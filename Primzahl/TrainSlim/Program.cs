@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
+
 string rail = new string('=', 70);
 List<int> trainpos = new List<int>();
 SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
