@@ -2,68 +2,72 @@
 using System.Collections.Generic;
 using System.Threading;
 
-//Was noch zu erldigen ist.
+//Aufgabe
+//Aufteilen in Interrator Pattern?
 //Zug soll wenn er bei sationen ist blockieren so dass andere nicht da sind später soll er unterschiedlich lang sein
 //und die section sollen am anfang gespert sein so das man 1 drückt und der 1 wird frei etc. 
 //erste punkt soll keine stange sein. Output gibt an wenn zug station schließt oder wenn zug stion verlässt also sie wieder realseased
 
 string rail = new string('=', 50);
 
-List<(int pos, int length)> trains = new List<(int pos, int length)>();
+List<(int pos, int length, int section)> trains = new List<(int pos, int length, int section)>();
 SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 bool running = true;
 
-// Masten entlang der Strecke
+// Mastpositionen
 int[] mastPositions = new int[10];
 for (int i = 0; i < mastPositions.Length; i++)
     mastPositions[i] = i * 7 + 5;
 
-SemaphoreSlim[] mastSemaphores = new SemaphoreSlim[mastPositions.Length];
-for (int i = 0; i < mastSemaphores.Length; i++)
-    mastSemaphores[i] = new SemaphoreSlim(1, 1); // frei
+//Staionen anzahl
+int stationCount = 7;
+if (stationCount > mastPositions.Length) stationCount = mastPositions.Length;
 
-// Stationen (jede Station = 1 Mast, der blockiert)
-int[] stationIndices = new int[5] { 0, 1, 2, 3, 4 }; // Mastindex der Station
-bool[] stationUnlocked = new bool[stationIndices.Length]; // manuell freigeben
+SemaphoreSlim[] stationLocks = new SemaphoreSlim[stationCount];
+bool[] stationUnlocked = new bool[stationCount];
+for (int i = 0; i < stationCount; i++)
+    stationLocks[i] = new SemaphoreSlim(0, 1);
 
 Console.Clear();
+
+void SafeWriteLine(int left, int top, string text)
+{
+    if (top >= Console.BufferHeight)
+        Console.WriteLine(text);
+    else
+    {
+        Console.SetCursorPosition(left, top);
+        Console.WriteLine(text);
+    }
+}
 
 void DrawRail()
 {
     char[] topLine = new char[rail.Length];
     char[] bottomLine = rail.ToCharArray();
-
-    for (int i = 0; i < rail.Length; i++)
-        topLine[i] = ' ';
+    for (int i = 0; i < topLine.Length; i++) topLine[i] = ' ';
 
     // Masten zeichnen
     for (int i = 0; i < mastPositions.Length; i++)
-    {
         if (mastPositions[i] < rail.Length)
             topLine[mastPositions[i]] = '\\';
+    
+    for (int s = 0; s < stationCount; s++)
+    {
+        int mast = mastPositions[s];
+        if (mast < rail.Length && stationLocks[s].CurrentCount == 0)
+            topLine[mast] = '_';
     }
 
     // Züge zeichnen
     foreach (var train in trains)
     {
-        int pos = train.pos;
-        int length = train.length;
-        for (int j = 0; j < length && pos + j < rail.Length; j++)
-            bottomLine[pos + j] = '|';
+        for (int j = 0; j < train.length && train.pos + j < rail.Length; j++)
+            bottomLine[train.pos + j] = '|';
     }
 
-    // Blockierte Stationen (nur die Mastspitze markieren)
-    for (int s = 0; s < stationIndices.Length; s++)
-    {
-        int mast = mastPositions[stationIndices[s]];
-        if (mastSemaphores[stationIndices[s]].CurrentCount == 0)
-            topLine[mast] = '_'; // Blockierter Mast
-    }
-
-    Console.SetCursorPosition(0, 0);
-    Console.WriteLine(new string(topLine));
-    Console.SetCursorPosition(0, 1);
-    Console.WriteLine(new string(bottomLine));
+    SafeWriteLine(0, 0, new string(topLine));
+    SafeWriteLine(0, 1, new string(bottomLine));
 }
 
 Thread renderThread = new Thread(() =>
@@ -72,53 +76,70 @@ Thread renderThread = new Thread(() =>
     {
         semaphore.Wait();
 
-        // Züge bewegen
         for (int i = 0; i < trains.Count; i++)
         {
-            var (pos, length) = trains[i];
+            var (pos, length, section) = trains[i];
 
-            // Prüfen, ob Zug vor einem blockierten Mast steht
-            bool blocked = false;
-            for (int s = 0; s < stationIndices.Length; s++)
+            int nextSection = section + 1;
+
+            bool blockedByNext = false;
+            if (nextSection < stationCount)
             {
-                int mast = mastPositions[stationIndices[s]];
-                if (pos + length >= mast && pos <= mast && mastSemaphores[stationIndices[s]].CurrentCount == 0)
-                    blocked = true;
+                int nextMast = mastPositions[nextSection];
+                if (pos + length >= nextMast && pos <= nextMast && stationLocks[nextSection].CurrentCount == 0)
+                    blockedByNext = true;
             }
 
-            if (!blocked)
+            if (!blockedByNext)
             {
-                // Zug bewegen
                 pos++;
 
-                // Prüfen, ob Zug Mast betritt -> sperren
-                for (int s = 0; s < stationIndices.Length; s++)
+                // Abschnittswechsel prüfen
+                if (nextSection < stationCount)
                 {
-                    int mast = mastPositions[stationIndices[s]];
-                    if (pos + length - 1 == mast && mastSemaphores[stationIndices[s]].CurrentCount == 1)
-                    {
-                        mastSemaphores[stationIndices[s]].Wait();
-                        Console.SetCursorPosition(0, 3 + i);
-                        Console.WriteLine($"Zug {i} betritt Station {s + 1}");
-                    }
+                    int nextMast = mastPositions[nextSection];
 
-                    // Zug verlässt Mast -> freigeben
-                    if (pos > mast && mastSemaphores[stationIndices[s]].CurrentCount == 0)
+                    if (pos + length - 1 >= nextMast)
                     {
-                        mastSemaphores[stationIndices[s]].Release();
-                        Console.SetCursorPosition(0, 3 + i + stationIndices.Length);
-                        Console.WriteLine($"Zug {i} verlässt Station {s + 1}");
+                        if (stationLocks[nextSection].CurrentCount == 1)
+                        {
+                            stationLocks[nextSection].Wait();
+                            SafeWriteLine(0, 4 + i, $"Zug {i + 1} übernimmt Station {nextSection + 1}");
+                        }
+
+                        if (section >= 0 && section < stationCount)
+                        {
+                            if (stationLocks[section].CurrentCount == 0)
+                            {
+                                stationLocks[section].Release();
+                                SafeWriteLine(0, 4 + i + stationCount, $"Zug {i + 1} gibt Station {section + 1} frei");
+                            }
+                        }
+
+                        section = nextSection;
+                    }
+                }
+                else
+                {
+                    if (section >= 0 && section < stationCount)
+                    {
+                        int mastHere = mastPositions[section];
+                        if (pos > mastHere && stationLocks[section].CurrentCount == 0)
+                        {
+                            stationLocks[section].Release();
+                            SafeWriteLine(0, 4 + i + stationCount, $"Zug {i + 1} gibt letzte Station {section + 1} frei");
+                            section++;
+                        }
                     }
                 }
             }
 
-            trains[i] = (pos, length);
+            trains[i] = (pos, length, section);
         }
 
         trains.RemoveAll(t => t.pos >= rail.Length);
 
         DrawRail();
-
         semaphore.Release();
         Thread.Sleep(100);
     }
@@ -132,15 +153,15 @@ do
 {
     key = Console.ReadKey(true).Key;
 
-    // Stationen manuell freigeben: 1..5
-    if (key >= ConsoleKey.D1 && key <= ConsoleKey.D5)
+    // Stationen manuell freigeben 
+    if (key >= ConsoleKey.D1 && key <= ConsoleKey.D0 + stationCount)
     {
         int idx = key - ConsoleKey.D1;
-        if (!stationUnlocked[idx])
+        if (idx >= 0 && idx < stationCount && !stationUnlocked[idx])
         {
-            mastSemaphores[stationIndices[idx]].Release();
             stationUnlocked[idx] = true;
-            Console.WriteLine($"Station {idx + 1} freigegeben");
+            stationLocks[idx].Release();
+            Console.WriteLine($"Station {idx + 1} manuell freigegeben");
         }
     }
 
@@ -151,16 +172,16 @@ do
 
         int length = rand.Next(2, 5);
 
-        // Prüfen, ob erste Station freigegeben
-        bool canStart = mastSemaphores[stationIndices[0]].CurrentCount == 1;
-
-        if (canStart)
+        if (stationCount > 0 && stationLocks[0].CurrentCount == 1)
         {
-            trains.Add((0, length));
+            stationLocks[0].Wait();
+            trains.Add((0, length, 0));
             Console.WriteLine($"Neuer Zug startet mit Länge {length}");
         }
         else
+        {
             Console.WriteLine("Start blockiert, Station 1 muss freigegeben werden");
+        }
 
         semaphore.Release();
     }

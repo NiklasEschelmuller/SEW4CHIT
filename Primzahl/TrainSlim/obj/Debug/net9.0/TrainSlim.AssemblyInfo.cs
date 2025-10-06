@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TrainSlim")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+69d4e53f5185685d63bec954d0d602de6a13c9c4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2d5e7cb5e015a7542a3901482205f9b0e879e2a")]
 [assembly: System.Reflection.AssemblyProductAttribute("TrainSlim")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TrainSlim")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
