@@ -1,31 +1,34 @@
 ﻿namespace TrainSlimOb;
+using System;
 using System.Threading;
 
 public class MastObserver
 {
-    private readonly int[] mastPositions;
-    private readonly SemaphoreSlim[] stationLocks;
-
-    public MastObserver(int[] mastPositions, SemaphoreSlim[] stationLocks)
+    
+    public void EnterMast(object sender, int  sector)
     {
-        this.mastPositions = mastPositions;
-        this.stationLocks = stationLocks;
+        TrainSubject Train = (sender as TrainSubject); 
+        Globals.screen.WaitOne();
+        
+        Console.SetCursorPosition(0, 2+Train.Nr);
+        Console.Write($"Train nr {Train.Nr}({Thread.CurrentThread.GetHashCode()}) enters sector {sector}");
+        
+        Console.SetCursorPosition(10*(sector), 0);
+        Console.Write("-- ");
+        
+        Globals.screen.Release();
     }
 
-    public void DrawMasts()
+    public void ReleaseMast( object sender, int sector)
     {
-        char[] topLine = new char[mastPositions[^1] + 5];
-        for (int i = 0; i < topLine.Length; i++) topLine[i] = ' ';
-
-        for (int i = 0; i < mastPositions.Length; i++)
-        {
-            if (i < stationLocks.Length && stationLocks[i].CurrentCount == 0)
-                topLine[mastPositions[i]] = '_';
-            else
-                topLine[mastPositions[i]] = '\\';
-        }
-
-        Console.SetCursorPosition(0, 0);
-        Console.WriteLine(new string(topLine));
+        TrainSubject Train = (sender as TrainSubject); 
+        Globals.screen.WaitOne();
+        
+        Console.SetCursorPosition(0, 2+Train.Nr);
+        Console.Write($"Train nr {Train.Nr}({Thread.CurrentThread.GetHashCode()}) releases section {sector}");
+        Console.SetCursorPosition(10*(sector), 0);
+        Console.Write("/  "); //Semaphore als frei zeichnen
+        
+        Globals.screen.Release();
     }
 }

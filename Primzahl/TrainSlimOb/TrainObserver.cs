@@ -1,23 +1,32 @@
-﻿namespace TrainSlimOb;
+﻿using System.Runtime.CompilerServices;
+
+namespace TrainSlimOb;
 
 public class TrainObserver
 {
-    private readonly string rail;
-
-    public TrainObserver(string rail) => this.rail = rail;
-
-    public void DrawTrains(System.Collections.Generic.List<(int pos, int length, int section)> trains)
+    public void UpdateTrain(object sender, EventArgs e)
     {
-        char[] line = rail.ToCharArray();
-        for (int i = 0; i < line.Length; i++) line[i] = '=';
+        TrainSubject Train = (sender as TrainSubject);
+        
+        Globals.screen.WaitOne();
+        
+     //Draw Train
+     Console.SetCursorPosition(Train.CurrPos, Globals.DisplayLine);
 
-        foreach (var train in trains)
-        {
-            for (int j = 0; j < train.length && train.pos + j < line.Length; j++)
-                line[train.pos + j] = '|';
-        }
-
-        Console.SetCursorPosition(0, 1);
-        Console.WriteLine(new string(line));
+     if (Train.CurrPos < Console.WindowWidth - Train.Size) //inheralb der Simulation Area
+     {
+         Console.Write("|"); //vorne zeichnen
+         Console.SetCursorPosition(Train.CurrPos - Train.Size, Globals.DisplayLine);
+         Console.Write("="); //hinten löschen
+     }
+     else//outsie
+     {
+         Console.SetCursorPosition(Train.CurrPos - Train.Size, Globals.DisplayLine);
+        for(int i = 0; i < Train.Size; i++){
+            Console.Write("="); //Remove Train from Display
+         }
+     }
+     
+     Globals.screen.Release();
     }
 }

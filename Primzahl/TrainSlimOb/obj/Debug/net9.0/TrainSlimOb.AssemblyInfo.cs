@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TrainSlimOb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01d7376f388a130a4b1d473d326c044f3bf8af33")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5b5b7e8e8c4c03bc40e734c8ccbb9c73337eb14d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TrainSlimOb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TrainSlimOb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

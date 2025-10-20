@@ -2,40 +2,59 @@
 
 public class TrainSubject
 {
-    public class TrainUpdate
+    public int Size { get; set; }
+    public int Nr { get; set; }
+    public int CurrPos { get; set; } = 9;
+    public int CurrSector { get; set; } = 1;
+
+    public TrainSubject(int size, int nr)
     {
-        public int TrainIndex;
-        public int Pos;
-        public int Section;
-        public bool EnterStation;
-        public bool LeaveStation;
+        Size = size;
+        CurrPos = size;
+        Nr = nr;
     }
 
-    public event Action<TrainUpdate> TrainUpdated;
-    public List<(int pos, int length, int section)> Trains { get; private set; } = new();
+    public event EventHandler OnTrainHasMoved;
+    public event EventHandler<int> OnReleaseSector;
+    public event EventHandler<int> OnEnteringSector;
 
-    public void AddTrain(int length)
+    public void Move()
     {
-        Trains.Add((0, length, 0));
-        TrainUpdated?.Invoke(new TrainUpdate { TrainIndex = Trains.Count - 1, Pos = 0, Section = 0 });
-    }
-
-    public void UpdateTrain(int index, int pos, int section, bool enterStation = false, bool leaveStation = false)
-    {
-        var old = Trains[index];
-        Trains[index] = (pos, old.length, section);
-        TrainUpdated?.Invoke(new TrainUpdate
+        Console.WindowWidth = 89;
+        while (CurrPos < Console.WindowWidth)
         {
-            TrainIndex = index,
-            Pos = pos,
-            Section = section,
-            EnterStation = enterStation,
-            LeaveStation = leaveStation
-        });
+            if (CurrPos % 10 == 0)
+            {
+                //alle 10 mal anschauen
+                Globals.indermittn[CurrSector].WaitOne();
+                if (OnTrainHasMoved != null)
+                {
+                    OnEnteringSector(this, CurrSector);
+                }
+                CurrSector++; //bin im nächsten Sektor
+            } 
+            System.Threading.Thread.Sleep(150);
+            if(OnTrainHasMoved != null)
+                OnTrainHasMoved(this, EventArgs.Empty);
+            if ((CurrPos - Size + 1) % 10 == 0)//Ausfahrt aus Sektor
+            {
+                if (CurrSector > 2)
+                {
+                    //gibt voherigen Sektor wieder frei
+                    if (OnReleaseSector != null) {
+                        OnReleaseSector(this, CurrSector - 2);
+                    }
+                    System.Threading.Thread.Sleep(50);
+                    //gibt vorgen Sektor wieder frei
+                    Globals.indermittn[CurrSector - 2].Release();
+                }
+            }
+            CurrPos++;
+        }
+        if (OnReleaseSector != null)
+            OnReleaseSector(this, 0);
+        Globals.indermittn[8].Release();
+        
     }
-
-    public void RemoveTrain(int index)
-    {
-        if (index >= 0 && index < Trains.Count) Trains.RemoveAt(index);
-    }
+    
 }
