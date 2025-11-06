@@ -2,12 +2,11 @@
 <PageTitle>Sieb des Eratosthenes</PageTitle>
 
 <h3>Sieb-Programm (Blazor)</h3>
-
+<!-- Standalone Web app-->
 <form>
-    <!-- Input-Feld, das sofort den Text daneben anzeigt -->
     <label for="dummyInput">Tippe etwas:</label>
     <input id="dummyInput" type="text" @bind="DummyText" @bind:event="oninput" />
-    <span> → @DummyText</span>
+    <span> @DummyText</span>
 </form>
 
 <p role="status">Ergebnis: @Output</p>

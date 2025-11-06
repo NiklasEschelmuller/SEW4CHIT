@@ -1,14 +1,14 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
 <PageTitle>Sieb des Eratosthenes</PageTitle>
-
+<!-- Server app-->
 <h3>Sieb-Programm (Blazor)</h3>
 
 <form>
-    <!-- Input-Feld, das sofort den Text daneben anzeigt -->
+
     <label for="dummyInput">Tippe etwas:</label>
     <input id="dummyInput" type="text" @bind="DummyText" @bind:event="oninput" />
-    <span> → @DummyText</span>
+    <span> @DummyText</span>
 </form>
 
 <p role="status">Ergebnis: @Output</p>
@@ -21,20 +21,21 @@
     private int Number = 400000000;
     private string Output = "";
 
-    // Direkte Berechnung (UI blockierend)
+
     private void Direct()
     {
         Output = "calculating...";
-        StateHasChanged(); // UI sofort aktualisieren, DummyText sichtbar
+        StateHasChanged(); 
         Sieve(Number, out int result);
         Output = $"Anzahl Primzahlen bis {Number}: {result}";
     }
 
-    // Berechnung im Hintergrund (UI bleibt responsiv)
+
+    
     private async Task Background()
     {
         Output = "calculating...";
-        StateHasChanged(); // UI sofort aktualisieren
+        StateHasChanged();
         int result = await Task.Run(() =>
         {
             Sieve(Number, out int res);
@@ -43,7 +44,7 @@
         Output = $"Anzahl Primzahlen bis {Number}: {result}";
     }
 
-    // Sieb des Eratosthenes
+
     public void Sieve(int n, out int result)
     {
         bool[] isPrime = new bool[n + 1];
