@@ -1,0 +1,62 @@
+﻿@page "/"
+<PageTitle>Sieb des Eratosthenes</PageTitle>
+
+<h3>Sieb-Programm (Blazor)</h3>
+
+<form>
+    <!-- Input-Feld, das sofort den Text daneben anzeigt -->
+    <label for="dummyInput">Tippe etwas:</label>
+    <input id="dummyInput" type="text" @bind="DummyText" @bind:event="oninput" />
+    <span> → @DummyText</span>
+</form>
+
+<p role="status">Ergebnis: @Output</p>
+
+<button class="btn btn-primary" @onclick="Direct">Direkt berechnen</button>
+<button class="btn btn-secondary" @onclick="Background">Asynchron berechnen</button>
+
+@code {
+    private string DummyText = "";
+    private int Number = 40_000_000;
+    private string Output = "";
+    
+    private void Direct()
+    {
+        Output = "calculating...";
+        StateHasChanged(); 
+        Sieve(Number, out int result);
+        Output = $"Anzahl Primzahlen bis {Number}: {result}";
+    }
+
+
+    private async Task Background()
+    {
+        Output = "calculating...";
+        StateHasChanged(); 
+        int result = await Task.Run(() =>
+        {
+            Sieve(Number, out int res);
+            return res;
+        });
+        Output = $"Anzahl Primzahlen bis {Number}: {result}";
+    }
+
+
+    public void Sieve(int n, out int result)
+    {
+        bool[] isPrime = new bool[n + 1];
+        for (int i = 2; i <= n; i++)
+            isPrime[i] = true;
+
+        for (int i = 2; i * i <= n; i++)
+        {
+            if (isPrime[i])
+            {
+                for (int j = i * i; j <= n; j += i)
+                    isPrime[j] = false;
+            }
+        }
+
+        result = isPrime.Count(x => x);
+    }
+}
