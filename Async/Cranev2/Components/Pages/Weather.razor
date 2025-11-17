@@ -1,0 +1,63 @@
+﻿@page "/weather"
+@rendermode InteractiveServer
+<h3>Block-Animation</h3>
+
+<button @onclick="StartAnimation" disabled="@isRunning">Animation starten</button>
+
+<div class="factory">
+    <div class="@BoxClass"></div>
+</div>
+
+
+
+@code {
+    private bool isRunning = false;
+    private string BoxClass = "box";
+
+    private async Task StartAnimation()
+    {
+
+
+        while(true) 
+        {
+            BoxClass = "box";      
+            StateHasChanged();
+            await Task.Delay(600); 
+
+            BoxClass = "box A";     
+            StateHasChanged();
+            await Task.Delay(600);
+
+            BoxClass = "box B";     
+            StateHasChanged();
+            await Task.Delay(600);
+        }
+
+    }
+}
+<style>
+.factory {
+    position: relative;
+    width: 800px;
+    height: 200px;
+    border: 1px solid black;
+}
+
+.box {
+    width: 50px;
+    height: 50px;
+    background-color: steelblue;
+    position: absolute;
+    top: 100px;
+    left: 0;
+    transition: transform 0.5s ease;
+}
+
+.box.A {
+    transform: translateX(100px);
+}
+
+.box.B {
+    transform: translateX(200px);
+}
+</style>
