@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KranFroms")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+947e8e0cc6e694e63cc5050fec39690295a2ff66")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+549b92525bc8a2845e015b07c7b7e3d878166e8f")]
 [assembly: System.Reflection.AssemblyProductAttribute("KranFroms")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KranFroms")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

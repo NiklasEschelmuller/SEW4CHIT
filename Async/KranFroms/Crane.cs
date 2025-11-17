@@ -1,52 +1,67 @@
 ﻿using KranFroms;
 
-public class Crane
-{
-    private readonly MaschieneA maschineA;
-    private readonly MaschieneB maschineB;
-    private readonly Form1 form;
-
-    public Crane(MaschieneA a, MaschieneB b, Form1 form)
+   public class Crane
     {
-        maschineA = a;
-        maschineB = b;
-        this.form = form;
-    }
+        private readonly MaschieneA maschieneA;
+        private readonly MaschieneB maschieneB;
+        private readonly Form1 form;
 
-    public void Run()
-    {
-        int werkstueckNumber = 1;
-        while (true)
+        public Crane(MaschieneA a, MaschieneB b, Form1 form)
         {
-            // **Immer wieder von Lager 1 starten**
-            form.werkstueckX = 50; 
-            form.werkstueckY = 150;
-            form.kranX = 50;
+            maschieneA = a;
+            maschieneB = b;
+            this.form = form;
+        }
 
-            // 1) Lager 1 -> Maschine A
-            form.SetStepText($"[Kran] Werkstück {werkstueckNumber} aus Lager 1 geholt");
-            form.AnimateWerkstueck(50, 250, $"[Kran] Transport zu Maschine A...");
+        public void Run()
+        {
+            int werkstueckNumber = 1;
 
-            // Maschine A bearbeiten
-            form.SetStepText("[Maschine A] Bearbeitung gestartet...");
-            maschineA.Process();
-            form.SetStepText("[Maschine A] Bearbeitung abgeschlossen");
+                form.semaphore.Wait(); // Kran blockiert Zugriff
+                try
+                {
+                    // Lager 1 -> MaschieneA
+                    form.AnimateKranX(50, "[Kran] zu Lager 1");
+                    form.AnimateKranY(50, "[Kran] hebt Werkstück hoch");
+                    form.AnimateKranX(250, "[Kran] Transport zu MaschieneA");
 
-            // 2) Maschine A -> Maschine B
-            form.AnimateWerkstueck(250, 450, $"[Kran] Transport zu Maschine B...");
+                    // Maschine A bearbeitet
+                    form.semaphore.Release();
+                    maschieneA.Process(form);
+                    form.semaphore.Wait(); 
 
-            // Maschine B bearbeiten
-            form.SetStepText("[Maschine B] Bearbeitung gestartet...");
-            maschineB.Process();
-            form.SetStepText("[Maschine B] Bearbeitung abgeschlossen");
+                    form.AnimateKranY(80, "[Kran] senkt Werkstück ab");
 
-            // 3) Maschine B -> Lager 2
-            form.AnimateWerkstueck(450, 650, $"[Kran] Transport ins Lager 2...");
+                    // MaschieneB
+                    form.AnimateKranY(50, "[Kran] hebt Werkstück hoch");
+                    form.AnimateKranX(450, "[Kran] Transport zu MaschieneB");
 
-            form.SetStepText($"[Kran] Werkstück {werkstueckNumber} vollständig bearbeitet ✅");
+                    form.semaphore.Release();
+                    maschieneB.Process(form);
+                    form.semaphore.Wait();
 
-            Thread.Sleep(500);
-            werkstueckNumber++;
+                    form.AnimateKranY(80, "[Kran] senkt Werkstück ab");
+
+                    // Lager 2
+                    form.AnimateKranY(50, "[Kran] hebt Werkstück hoch");
+                    form.AnimateKranX(650, "[Kran] zu Lager 2");
+                    form.AnimateKranY(80, "[Kran] Werkstück ablegen");
+
+                    form.SetStepText($"[Kran] Werkstück {werkstueckNumber} bearbeitet");
+                    werkstueckNumber++;
+                    Thread.Sleep(500);
+
+                    // Reset
+                    form.kranX = 50;
+                    form.kranY = 80;
+                    form.werkstueckX = 50;
+                    form.werkstueckY = 150;
+                    form.werkstueckColor = Color.Red;
+                }
+                finally
+                {
+                    form.semaphore.Release();
+                }
+            
         }
     }
-}

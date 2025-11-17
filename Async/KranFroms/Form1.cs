@@ -1,39 +1,47 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 namespace KranFroms;
 
-public partial class Form1 : Form
-{
-private readonly MaschieneA maschineA = new();
-        private readonly MaschieneB maschineB = new();
+     public partial class Form1 : Form
+    {
+        // Werkstück
+        public int werkstueckX = 50;
+        public int werkstueckY = 150;
+        public Color werkstueckColor = Color.Red;
+
+        // Kran
+        public int kranX = 50;
+        public int kranY = 80;
+
+        // Maschinen
+        public int maschieneAY = 200;
+        public int maschieneBY = 200;
+
+        private readonly MaschieneA maschieneA = new();
+        private readonly MaschieneB maschieneB = new();
         private readonly Crane crane;
 
-        public int werkstueckX = 50; // X-Position Werkstück
-        public int werkstueckY = 150; // Y-Position Werkstück
-        public int kranX = 50;        // X-Position Kran
-        private int kranY = 80;        // Y-Position Kran
         private string currentStep = "Warte...";
-        private bool werkstueckVisible;
+        private bool werkstueckVisible = true;
+
+        public SemaphoreSlim semaphore = new(1,1); // nur ein Thread darf das Werkstück
 
         public Form1()
         {
             InitializeComponent();
-            DoubleBuffered = true;
-            Width = 800;
-            Height = 300;
-            Text = "Fabrik Animation mit Kran";
+            this.DoubleBuffered = true;
+            this.Width = 800;
+            this.Height = 300;
+            this.Text = "Fabrik Animation Kran & Maschinen";
 
-            crane = new Crane(maschineA, maschineB, this);
+            crane = new Crane(maschieneA, maschieneB, this);
 
             Button startButton = new Button { Text = "Start", Location = new Point(10, 10) };
             startButton.Click += StartButton_Click;
             Controls.Add(startButton);
-        }
-
-        [AllowNull] public sealed override string Text
-        {
-            get { return base.Text; }
-            set { base.Text = value; }
         }
 
         private void StartButton_Click(object? sender, EventArgs e)
@@ -47,19 +55,19 @@ private readonly MaschieneA maschineA = new();
 
             // Lager 1
             g.FillRectangle(Brushes.Gray, 50, 200, 80, 50);
-            g.DrawString("Lager 1", Font, Brushes.White, 50, 180);
+            g.DrawString("Lager 1", this.Font, Brushes.White, 50, 180);
 
-            // Maschine A
-            g.FillRectangle(Brushes.Blue, 250, 200, 80, 50);
-            g.DrawString("Maschine A", Font, Brushes.White, 250, 180);
+            // MaschieneA
+            g.FillRectangle(Brushes.Blue, 250, maschieneAY, 80, 50);
+            g.DrawString("MaschieneA", this.Font, Brushes.White, 250, maschieneAY - 20);
 
-            // Maschine B
-            g.FillRectangle(Brushes.Green, 450, 200, 80, 50);
-            g.DrawString("Maschine B", Font, Brushes.White, 450, 180);
+            // MaschieneB
+            g.FillRectangle(Brushes.Green, 450, maschieneBY, 80, 50);
+            g.DrawString("MaschieneB", this.Font, Brushes.White, 450, maschieneBY - 20);
 
             // Lager 2
             g.FillRectangle(Brushes.Gray, 650, 200, 80, 50);
-            g.DrawString("Lager 2", Font, Brushes.White, 650, 180);
+            g.DrawString("Lager 2", this.Font, Brushes.White, 650, 180);
 
             // Kran
             g.FillRectangle(Brushes.Gold, kranX, kranY, 100, 20);
@@ -67,36 +75,70 @@ private readonly MaschieneA maschineA = new();
             // Werkstück
             if (werkstueckVisible)
             {
-                g.FillRectangle(Brushes.Red, werkstueckX, werkstueckY, 30, 30);
+                using (Brush b = new SolidBrush(werkstueckColor))
+                    g.FillRectangle(b, werkstueckX, werkstueckY, 30, 30);
             }
 
-            // Statusanzeige
-            g.DrawString(currentStep, this.Font, Brushes.Black, 100, 10);
+            // Status
+            g.FillRectangle(Brushes.White, 5, 45, 400, 30);
+            g.DrawString(currentStep, this.Font, Brushes.Black, 10, 50);
         }
 
-        // Animation-Methode für Werkstück + Kran
-        public void AnimateWerkstueck(int startX, int endX, string step)
+        public void AnimateKranX(int targetX, string step)
         {
-            werkstueckVisible = true;
             currentStep = step;
-
-            int direction = startX < endX ? 1 : -1;
-            while ((direction == 1 && werkstueckX < endX) || (direction == -1 && werkstueckX > endX))
+            int direction = targetX > kranX ? 1 : -1;
+            while ((direction == 1 && kranX < targetX) || (direction == -1 && kranX > targetX))
             {
-                werkstueckX += direction * 5;
-                kranX = werkstueckX - 35; // Kran leicht vor das Werkstück setzen
-                Invoke(Invalidate);
+                kranX += direction * 5;
+                werkstueckX = kranX + 35;
+                Invoke(new Action(Invalidate));
                 Thread.Sleep(30);
             }
+            kranX = targetX;
+            werkstueckX = kranX + 35;
+            Invoke(new Action(Invalidate));
+        }
 
-            werkstueckX = endX;
-            kranX = werkstueckX - 35;
-            Invoke(Invalidate);
+        public void AnimateKranY(int targetY, string step)
+        {
+            currentStep = step;
+            int direction = targetY > kranY ? 1 : -1;
+            while ((direction == 1 && kranY < targetY) || (direction == -1 && kranY > targetY))
+            {
+                kranY += direction * 5;
+                werkstueckY = kranY + 35;
+                Invoke(new Action(Invalidate));
+                Thread.Sleep(30);
+            }
+            kranY = targetY;
+            werkstueckY = kranY + 35;
+            Invoke(new Action(Invalidate));
+        }
+
+        public void AnimateMaschineY(ref int maschineY, int targetY, string step)
+        {
+            currentStep = step;
+            int direction = targetY > maschineY ? 1 : -1;
+            while ((direction == 1 && maschineY < targetY) || (direction == -1 && maschineY > targetY))
+            {
+                maschineY += direction * 5;
+                Invoke(new Action(Invalidate));
+                Thread.Sleep(30);
+            }
+            maschineY = targetY;
+            Invoke(new Action(Invalidate));
         }
 
         public void SetStepText(string text)
         {
             currentStep = text;
-            Invoke(Invalidate);
+            Invoke(new Action(Invalidate));
         }
-}
+
+        public void SetWerkstueckColor(Color color)
+        {
+            werkstueckColor = color;
+            Invoke(new Action(Invalidate));
+        }
+    }
