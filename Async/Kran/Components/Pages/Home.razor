@@ -1,0 +1,237 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<h3>Fabrik-Simulation (robust)</h3>
+
+<button @onclick="StartSimulation" disabled="@isRunning">Simulation starten</button>
+
+<div class="factory">
+    <div class="lager" style="left:50px; top:150px;">Lager 1</div>
+    <div class="machine" style="left:250px; top:150px;">Maschine A</div>
+    <div class="machine" style="left:450px; top:150px;">Maschine B</div>
+    <div class="lager" style="left:650px; top:150px;">Lager 2</div>
+
+    <div class="crane" style="left:@(state.CraneX)px; top:@(state.CraneY)px;"></div>
+    <div class="@state.ItemClass" style="left:@(state.ItemX)px; top:@(state.ItemY)px;"></div>
+</div>
+
+@code {
+    SharedState state = new SharedState();
+    private bool isRunning = false;
+
+    protected override void OnInitialized()
+    {
+        state.CraneX = 50;
+        state.CraneY = 130;
+        state.ItemX = 50;
+        state.ItemY = 150;
+        state.ItemClass = "box atLager1";
+        state.ItemAttached = true;
+
+        state.Refresh = async () => await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task StartSimulation()
+    {
+        if (isRunning) return;
+        isRunning = true;
+
+        try
+        {
+            var crane = new Crane(state);
+            var masA = new MaschineA(state);
+            var masB = new MaschineB(state);
+
+            // --- Kran zu Maschine A ---
+            await crane.MoveToX(250);
+            await crane.Lift();  // Kran hoch ohne Item
+
+            // Maschine A bearbeitet Item
+            state.ItemAttached = false;
+            await masA.Process();
+
+            // Kran holt Item wieder ab
+            await crane.LowerAndPickup();
+
+            // --- Kran zu Maschine B ---
+            await crane.MoveToX(450);
+            await crane.Lift();  // Kran hoch ohne Item
+
+            state.ItemAttached = false;
+            await masB.Process();
+
+            await crane.LowerAndPickup();
+
+            // --- Kran zu Lager 2 ---
+            await crane.MoveToX(650);
+            await crane.Lift();
+            state.ItemAttached = false;
+            state.ItemClass = "box toLager2";
+            await state.Refresh();
+            await crane.LowerAndPickup(); // Kran setzt Item ab
+        }
+        finally
+        {
+            isRunning = false;
+        }
+    }
+
+    // ---------------- SharedState ----------------
+    public class SharedState
+    {
+        public int CraneX { get; set; }
+        public int CraneY { get; set; }
+        public int ItemX { get; set; }
+        public int ItemY { get; set; }
+        public string ItemClass { get; set; } = "box atLager1";
+        public bool ItemAttached { get; set; } = true;
+        public Func<Task> Refresh { get; set; } = () => Task.CompletedTask;
+    }
+
+    // ---------------- Crane ----------------
+    public class Crane
+    {
+        readonly SharedState s;
+        readonly int step = 8;
+        public Crane(SharedState state) => s = state;
+
+        public async Task MoveToX(int targetX)
+        {
+            while (s.CraneX != targetX)
+            {
+                s.CraneX = s.CraneX < targetX ? Math.Min(s.CraneX + step, targetX) : Math.Max(s.CraneX - step, targetX);
+                if (s.ItemAttached)
+                {
+                    s.ItemX = s.CraneX;
+                    s.ItemY = s.CraneY + 20;
+                }
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+        }
+
+        public async Task Lift()
+        {
+            int targetY = 80;
+            while (s.CraneY != targetY)
+            {
+                s.CraneY = s.CraneY < targetY ? Math.Min(s.CraneY + step, targetY) : Math.Max(s.CraneY - step, targetY);
+                if (s.ItemAttached)
+                {
+                    s.ItemX = s.CraneX;
+                    s.ItemY = s.CraneY + 20;
+                }
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+        }
+
+        public async Task LowerAndPickup()
+        {
+            int lowerY = 130;
+            while (s.CraneY != lowerY)
+            {
+                s.CraneY = s.CraneY < lowerY ? Math.Min(s.CraneY + step, lowerY) : Math.Max(s.CraneY - step, lowerY);
+                if (s.ItemAttached)
+                {
+                    s.ItemX = s.CraneX;
+                    s.ItemY = s.CraneY + 20;
+                }
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+            s.ItemAttached = true;
+            s.ItemX = s.CraneX;
+            s.ItemY = s.CraneY + 20;
+            await s.Refresh();
+        }
+    }
+
+    // ---------------- MaschineA ----------------
+    public class MaschineA
+    {
+        readonly SharedState s;
+        public MaschineA(SharedState state) => s = state;
+
+        public async Task Process()
+        {
+            // Item vom Kran trennen
+            s.ItemAttached = false;
+
+            // Maschine fährt hoch (Item bewegt sich visuell)
+            for (int y = s.ItemY; y > 120; y -= 5)
+            {
+                s.ItemY = y;
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+
+            // Verarbeitung: Farbe ändern
+            s.ItemClass = "box workA";
+            await s.Refresh();
+            await Task.Delay(600);
+
+            // Maschine senkt Item wieder ab
+            for (int y = s.ItemY; y < 150; y += 5)
+            {
+                s.ItemY = y;
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+
+            s.ItemClass = "box toA";
+            await s.Refresh();
+        }
+    }
+
+    // ---------------- MaschineB ----------------
+    public class MaschineB
+    {
+        readonly SharedState s;
+        public MaschineB(SharedState state) => s = state;
+
+        public async Task Process()
+        {
+            for (int y = s.ItemY; y > 120; y -= 5)
+            {
+                s.ItemY = y;
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+
+            s.ItemClass = "box workB";
+            await s.Refresh();
+            await Task.Delay(600);
+
+            for (int y = s.ItemY; y < 150; y += 5)
+            {
+                s.ItemY = y;
+                await s.Refresh();
+                await Task.Delay(25);
+            }
+
+            s.ItemClass = "box toB";
+            await s.Refresh();
+        }
+    }
+}
+
+<style>
+.factory { position: relative; width: 800px; height: 300px; border: 1px solid black; margin-top:10px; }
+.lager, .machine { position: absolute; width: 80px; height: 50px; border: 2px solid black; text-align:center; line-height:50px; }
+.crane { position: absolute; width: 100px; height: 20px; background: gold; border:2px solid #b8860b; z-index:1; }
+.box {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    background-color: gray;
+    transition: transform 0.3s linear, background-color 0.3s linear, top 0.25s linear;
+    z-index:2;
+}
+.box.atLager1 { top:150px; }
+.box.toA { top:150px; }
+.box.workA { top:150px; background:red; }
+.box.toB { top:150px; }
+.box.workB { top:150px; background:green; }
+.box.toLager2 { top:150px; }
+</style>
