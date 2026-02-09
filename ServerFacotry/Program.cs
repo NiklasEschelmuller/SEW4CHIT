@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-
+//Zum Aufrufen der Website
+// http://localhost:2025/index.html
 TcpListener lsnr = new TcpListener(IPAddress.Loopback, 2025);
 lsnr.Start();
 const int anz = 5;
@@ -11,7 +12,6 @@ for (int i = 0; i < anz; i++)
 {
     new Thread(Server).Start();
 }
-
 void Server()
 {
     while (true)
@@ -77,6 +77,7 @@ abstract class FileHandler
     public abstract void Send(Stream stream, string path);
 }
 
+//Text
 class TextFileHandler : FileHandler
 {
     public override string ContentType => "text/plain; charset=utf-8";
