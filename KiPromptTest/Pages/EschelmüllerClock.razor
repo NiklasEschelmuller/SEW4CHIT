@@ -1,0 +1,117 @@
+﻿@page "/Eschelmüller-Clock"
+@using System.Globalization
+@using System.Timers
+@inject IJSRuntime JS
+@implements IDisposable
+
+<div class="niklas-clock-wrapper">
+    <svg viewBox="0 0 100 100" class="analog-clock">
+        <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#2c3e50" stroke-width="1.2" />
+
+        @for (int i = 0; i < 60; i++)
+        {
+            bool isHour = i % 5 == 0;
+            <line x1="50" y1="5" x2="50" y2="@(isHour ? 10 : 7)"
+                  transform="rotate(@(i * 6), 50, 50)"
+                  stroke="@(isHour ? "#2c3e50" : "#bdc3c7")" 
+                  stroke-width="@(isHour ? 0.7 : 0.3)" />
+        }
+
+        @for (int i = 1; i <= 12; i++)
+        {
+            double angle = i * 30 * (Math.PI / 180);
+            double x = 50 + 36 * Math.Sin(angle);
+            double y = 50 - 36 * Math.Cos(angle);
+            
+            @((MarkupString)$@"<text x=""{Format(x)}"" y=""{Format(y + 2.2)}"" 
+                                     text-anchor=""middle"" 
+                                     font-size=""7.5"" 
+                                     font-family=""Segoe UI, Arial"" 
+                                     font-weight=""bold"" 
+                                     fill=""#2c3e50"">{i}</text>")
+        }
+
+        <line x1="50" y1="50" x2="50" y2="28" 
+              transform="rotate(@Format(HourAngle), 50, 50)"
+              stroke="#2c3e50" stroke-width="2.2" stroke-linecap="round" />
+        
+        <line x1="50" y1="50" x2="50" y2="15" 
+              transform="rotate(@Format(MinuteAngle), 50, 50)"
+              stroke="#34495e" stroke-width="1.4" stroke-linecap="round" />
+        
+        <line x1="50" y1="50" x2="50" y2="8" 
+              transform="rotate(@Format(SecondAngle), 50, 50)"
+              stroke="#e74c3c" stroke-width="0.6" stroke-linecap="round" />
+
+        <circle cx="50" cy="50" r="1.5" fill="#e74c3c" />
+    </svg>
+
+    <div class="status-panel">
+        <h3>Uhrzeit von Niklas</h3>
+        <p>@_currentTime.ToString("T")</p>
+    </div>
+</div>
+
+<style>
+    .niklas-clock-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #f4f7f6;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        max-width: 400px;
+        margin: 50px auto;
+    }
+    .analog-clock {
+        width: 100%;
+        height: auto;
+    }
+    .status-panel {
+        text-align: center;
+        margin-top: 20px;
+        color: #2c3e50;
+    }
+    .status-panel h3 { margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; color: #95a5a6; }
+    .status-panel p { font-family: 'Courier New', monospace; font-size: 1.8rem; margin: 5px 0; font-weight: bold; }
+</style>
+
+@code {
+    private DateTime _currentTime = DateTime.Now;
+    private Timer? _timer;
+
+    // Mathematische Winkelberechnung
+    private double SecondAngle => _currentTime.Second * 6;
+    private double MinuteAngle => (_currentTime.Minute * 6) + (_currentTime.Second * 0.1);
+    private double HourAngle => ((_currentTime.Hour % 12) * 30) + (_currentTime.Minute * 0.5);
+
+    // WICHTIG: Erzwingt den Punkt als Dezimaltrenner für SVG (behebt das Ruckeln)
+    private string Format(double value) => value.ToString("F2", CultureInfo.InvariantCulture);
+
+    protected override void OnInitialized()
+    {
+        _timer = new Timer(1000);
+        _timer.Elapsed += async (s, e) => 
+        {
+            var previousMinute = _currentTime.Minute;
+            _currentTime = DateTime.Now;
+
+            // Schlagen zur vollen Stunde
+            if (_currentTime.Minute == 0 && _currentTime.Second == 0)
+            {
+                await JS.InvokeVoidAsync("playClockChime");
+            }
+
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.AutoReset = true;
+        _timer.Enabled = true;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
+    }
+}
